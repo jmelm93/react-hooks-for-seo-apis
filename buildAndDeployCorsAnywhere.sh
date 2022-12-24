@@ -7,9 +7,10 @@
 # https://YOUR_HEROKU_APP_NAME.herokuapp.com/https://api
 # 
 
-npm install -g heroku
-git clone https://github.com/Rob--W/cors-anywhere.git
-cd cors-anywhere
-heroku create
-git push heroku master
+npm install -g heroku # Install Heroku CLI
+git clone https://github.com/Rob--W/cors-anywhere.git # Clone the CORS Anywhere repository
+cd cors-anywhere # Navigate to the CORS Anywhere directory
+heroku create # Create a new Heroku app
+git push heroku master # Deploy the CORS Anywhere server to Heroku
+
 
