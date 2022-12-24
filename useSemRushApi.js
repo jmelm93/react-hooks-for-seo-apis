@@ -4,27 +4,36 @@ import dayjs from 'dayjs';
 //example use
 //
 // const ExampleComponent = () => {
-//   const { data, isLoading, error, fetchSemRushApi } = useSemRushApi();
+//     const [apiKey, setApiKey] = useState('');
+//     const { data, isLoading, error, fetchSemRushApi } = useSemRushApi(apiKey);
 //
-//   const handleFetch = () => {
-//     fetchSemRushApi({
-//       type: 'url_organic',
-//       options: {
-//         url: 'example.com',
-//         database: 'us',
-//         display_limit: 20,
-//       },
-//     });
+//     const handleFetch = () => {
+//       fetchSemRushApi({
+//         type: 'url_organic',
+//         options: {
+//           url: 'example.com',
+//           database: 'us',
+//           display_limit: 20,
+//         },
+//       });
+//     };
+//
+//     return (
+//       <div>
+//         <label htmlFor="api-key-input">Enter Semrush API Key:</label>
+//         <input
+//           id="api-key-input"
+//           type="text"
+//           value={apiKey}
+//           onChange={(event) => setApiKey(event.target.value)}
+//         />
+//         {isLoading && <div>Loading...</div>}
+//         {error && <div>{error.message}</div>}
+//         {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+//         <button onClick={handleFetch}>Fetch Data</button>
+//       </div>
+//     );
 //   };
-// return (
-//     <div>
-//       {isLoading && <div>Loading...</div>}
-//       {error && <div>{error.message}</div>}
-//       {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-//       <button onClick={handleFetch}>Fetch Data</button>
-//     </div>
-//   );
-// };
 
 const availableScopes = [
     {
@@ -57,7 +66,7 @@ const availableScopes = [
     }
 ];
 
-const useSemRushApi = () => {
+const useSemRushApi = (apiKey) => {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
