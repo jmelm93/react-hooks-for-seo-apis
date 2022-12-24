@@ -1,39 +1,42 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import axios from 'axios';
 
 //example use
 //
 // const ExampleComponent = () => {
 //     const [apiKey, setApiKey] = useState('');
 //     const { data, isLoading, error, fetchSemRushApi } = useSemRushApi(apiKey);
-//
+
 //     const handleFetch = () => {
-//       fetchSemRushApi({
-//         type: 'url_organic',
-//         options: {
-//           url: 'example.com',
-//           database: 'us',
-//           display_limit: 20,
-//         },
-//       });
+//         fetchSemRushApi({
+//             type: 'url_organic',
+//             options: {
+//                 url: 'https://www.inseev.com/seo-services-and-consulting/',
+//                 database: 'us',
+//                 display_limit: 15,
+//             },
+//         });
 //     };
-//
+
 //     return (
-//       <div>
-//         <label htmlFor="api-key-input">Enter Semrush API Key:</label>
-//         <input
-//           id="api-key-input"
-//           type="text"
-//           value={apiKey}
-//           onChange={(event) => setApiKey(event.target.value)}
-//         />
-//         {isLoading && <div>Loading...</div>}
-//         {error && <div>{error.message}</div>}
-//         {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-//         <button onClick={handleFetch}>Fetch Data</button>
-//       </div>
+//         <div>
+//             <label htmlFor="api-key-input">Enter Semrush API Key:</label>
+//             <input
+//                 id="api-key-input"
+//                 type="text"
+//                 value={apiKey}
+//                 onChange={(event) => setApiKey(event.target.value)}
+//             />
+//             {isLoading && <div>Loading...</div>}
+//             {error && <div>{error.message}</div>}
+//             {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+//             <button onClick={handleFetch}>Fetch Data</button>
+//         </div>
 //     );
-//   };
+// };
+//
+// export default ExampleComponent;
 
 const availableScopes = [
     {
@@ -59,12 +62,27 @@ const availableScopes = [
             // export_escape: "1", // If this parameter uses the value "1", the report’s columns will be wrapped in double quotation marks (").
             // export_decode: "0", // If this parameter uses the value "0", the response will be sent as a URL-encoded string; if "1", the response will not be converted.
             display_date: dayjs().subtract(1, 'month').format('YYYYMM15'), // use the 15th of last month as default
-            export_columns: 'Ph, Po, Pp, Nq, Cp, Co, Kd, Tr, Tg, Tc, Nr, Td, Fp, Fk, Ts, In',
-            display_sort: 'tr_desc, po_asc', // sort by traffic descending, then position ascending
+            export_columns: 'Ph,Po,Pp,Nq,Cp,Co,Kd,Tr,Tg,Tc,Nr,Td,Fp,Fk,Ts,In',
+            display_sort: 'tr_desc,po_asc', // sort by traffic descending, then position ascending
             display_filter: 'tr>=1' // traffic is at least 1
         }
     }
 ];
+
+const buildUrl = (type, apiKey, options) => {
+    const baseUrl = 'https://api.semrush.com/';
+    let url = `${baseUrl}?type=${type}&key=${apiKey}`;
+
+    Object.keys(options).forEach((option) => {
+        url += `&${option}=${options[option]}`;
+    });
+
+    return url;
+};
+
+const urlBuilderWithCorsAnywhere = (url) => {
+    return `https://cors-anywhere.herokuapp.com/${url}`;
+};
 
 const useSemRushApi = (apiKey) => {
     const [data, setData] = useState(null);
@@ -97,22 +115,14 @@ const useSemRushApi = (apiKey) => {
                 }
             });
 
+            //build url
+            const url = buildUrl(type, apiKey, requestOptions);
+
             //make request
-            const response = await fetch(
-                `https://api.semrush.com/analytics/v3/${type}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    Authorization: `Bearer ${YOUR_API_KEY}`,
-                },
-                body: JSON.stringify(requestOptions),
-                }
-            );
-            
-            //await data then set state with data in json format
-            const data = await response.json();
-            setData(data);
+            const response = await axios.get(urlBuilderWithCorsAnywhere(url));
+
+            //set state with response data
+            setData(response.data);
 
         } catch (error) {
             //catch error and set state
